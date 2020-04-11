@@ -1,54 +1,43 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react'
+import '../css/form.css'
+const API_KEY = 'e5d9b9ad'
 
-const API_KEY= 'e5d9b9ad'
-
-export class SearchForm extends Component{
-    state={
-        inputMovie: ''
+export class SearchForm extends Component {
+    state = {
+      searchText: ""
+    };
+  
+    _handleUserSearch = e => {
+      this.setState({ searchText: e.target.value });
+    };
+  
+    _handleSubmit = e => {
+      e.preventDefault();
+      const { searchText } = this.state;
+      fetch(`https://www.omdbapi.com/?apikey=${API_KEY}&s=${searchText}`)
+        .then(response => response.json())
+        .then(data => {
+          console.log(data);
+          const { Search = [], totalResults = "0" } = data;
+          console.log({ Search, totalResults });
+          this.props.onResults(Search)
+          window.sessionStorage.setItem('sessionMovies', JSON.stringify(Search));
+        });
+    };
+  
+    render() {
+      return (
+        <form onSubmit={this._handleSubmit}>
+          <div className="SearchForm__inputContainer">
+            <input
+              className="SearchForm__input has-text-link"
+              onChange={this._handleUserSearch}
+              type="text"
+              placeholder="Search here! "
+            />
+            <button className="SearchForm__submit has-text-link"><i className="fas fa-search"></i></button>
+          </div>
+        </form>
+      );
     }
-
-    //Guardar texto producto por el input
-    _handleChange=(e) =>{
-        this.setState({inputMovie: e.target.value})
-    }
-
-    _handleSubmit = (e) =>{
-        e.preventDefault()
-        const {inputMovie} = this.state
-        //Búsqueda de las 10 prim peliculas que lleven inputMovie en su titulo.
-        fetch(`http://www.omdbapi.com/?apikey=${API_KEY}&s=${inputMovie}`)
-            .then(res => res.json())
-            .then(results => {
-                const { Search = [], totalResults = "0"} = results
-                console.log({Search, totalResults})
-                this.props.onResults(Search)
-            })
-            
-        //Búsqueda por año
-        fetch(`http://www.omdbapi.com/?apikey=${API_KEY}&y=${inputMovie}`)
-            .then(res => res.json())
-            .then(results => {
-                console.log(results)
-            })
-    }
-    render(){
-        return(
-            <form onSubmit={this._handleSubmit} >
-                <div className="field has-addons"> 
-                    <div className="control is-expanded">       
-                        <input
-                         className="input" 
-                         onChange={this._handleChange}
-                         type="text"
-                         placeholder="Movie to search..."/>
-                    </div>
-                    <div className="control">
-                        <button className="button is-info">
-                        Search
-                    </button>
-                    </div>
-                </div>
-            </form>
-        )
-    }
-}
+  }

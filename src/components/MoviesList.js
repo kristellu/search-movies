@@ -1,30 +1,33 @@
-import React, {Component} from 'react';
-import PropTypes from 'prop-types'
-import { Movie } from './Movie';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import { Movie } from "./Movie";
 
-export class MoviesList extends Component{
-    static propTypes={
-        movies: PropTypes.array
-    }
-    render(){
-        const {movies} = this.props
-        return (
-            <div className="MoviesList">
-                {
-                    movies.map(movie =>{
-                        return  (
-                            <div key={movie.imdbID} className = 'MoviesList-item'>
-                                <Movie 
-                                    id={movie.imdbID}
-                                    title={movie.Title}
-                                    year = {movie.Year}
-                                    poster = {movie.Poster}
-                                />
-                            </div>
-                        )
-                    })  
-                }
-            </div>
-        ) 
-    }
-}    
+import '../css/home.css'
+
+export class MoviesList extends Component {
+  static propTypes = {
+    movies: PropTypes.array
+  };
+
+  render() {
+    const { movieResults } = this.props;
+    return (
+      <div className="Home__results">
+        {
+          movieResults.map(movie => {
+            return (
+              <Movie
+                key={`${movie.imdbID}${movie.Title}`}
+                id={movie.imdbID}
+                poster={movie.Poster}
+                title={movie.Title}
+                year={movie.Year}
+                type={movie.Type}
+              />
+            )
+          })
+        }
+      </div>
+    );
+  }
+}
